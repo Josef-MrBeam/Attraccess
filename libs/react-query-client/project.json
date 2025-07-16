@@ -1,0 +1,47 @@
+{
+  "name": "react-query-client",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/react-query-client/src",
+  "projectType": "library",
+  "release": {
+    "version": {
+      "currentVersionResolver": "git-tag",
+      "preserveLocalDependencyProtocols": false,
+      "manifestRootsToUpdate": ["dist/{projectRoot}"]
+    }
+  },
+  "tags": [],
+  "// targets": "to see all targets run: nx show project react-query-client --web",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "outputPath": "dist/libs/react-query-client",
+        "tsConfig": "libs/react-query-client/tsconfig.lib.json",
+        "packageJson": "libs/react-query-client/package.json",
+        "main": "libs/react-query-client/src/index.ts",
+        "assets": ["libs/react-query-client/*.md"]
+      },
+      "dependsOn": ["generate"]
+    },
+    "generate": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "outputs": ["{projectRoot}/src/lib/**/**"],
+      "options": {
+        "command": "pnpm openapi-rq --operationId",
+        "input": "dist/apps/api-swagger/swagger.json",
+        "enums": "typescript",
+        "output": "libs/react-query-client/src/lib"
+      },
+      "dependsOn": ["api:export-swagger"]
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}",
+        "registry": "https://registry.npmjs.org/",
+        "access": "public"
+      }
+    }
+  }
+}

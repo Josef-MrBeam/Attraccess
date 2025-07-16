@@ -1,0 +1,22 @@
+{
+  "actions": {
+    "start": {
+      "success": {
+        "title": "Sitzung gestartet",
+        "description": "Die Sitzung wurde erfolgreich gestartet."
+      }
+    },
+    "startAndTakeover": {
+      "success": {
+        "title": "Sitzung gestartet",
+        "description": "Die Sitzung wurde erfolgreich gestartet."
+      }
+    },
+    "stop": {
+      "success": {
+        "title": "Sitzung beendet",
+        "description": "Die Sitzung wurde erfolgreich beendet."
+      }
+    }
+  }
+}

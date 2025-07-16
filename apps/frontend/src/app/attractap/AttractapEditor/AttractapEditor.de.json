@@ -1,0 +1,13 @@
+{
+  "title": "Reader bearbeiten",
+  "readerName": "Reader-Name",
+  "enterReaderName": "Reader-Namen eingeben",
+  "connectedResources": "Verbundene Ressourcen",
+  "enterResourceIds": "Ressourcen-IDs eingeben (durch Kommas getrennt)",
+  "resourcesDescription": "Geben Sie Ressourcen-IDs durch Kommas getrennt ein (z.B. 1, 2, 3)",
+  "cancel": "Abbrechen",
+  "save": "Änderungen speichern",
+  "errorUpdatingReader": "Fehler beim Aktualisieren des Readers",
+  "readerUpdated": "Reader aktualisiert",
+  "readerUpdatedDescription": "Reader erfolgreich aktualisiert"
+}

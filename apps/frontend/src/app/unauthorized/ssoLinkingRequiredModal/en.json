@@ -1,0 +1,13 @@
+{
+  "title": "Account linking required",
+  "subtitle": "Please link your account with your SSO account",
+  "description": "We have already found an account with the email address {{email}}. Please enter your password to link it with your SSO account.",
+  "inputs": {
+    "password": {
+      "label": "Password"
+    }
+  },
+  "actions": {
+    "link": "Link account"
+  }
+}

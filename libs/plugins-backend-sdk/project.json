@@ -1,0 +1,34 @@
+{
+  "name": "plugins-backend-sdk",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/plugins-backend-sdk/src",
+  "projectType": "library",
+  "release": {
+    "version": {
+      "currentVersionResolver": "git-tag",
+      "preserveLocalDependencyProtocols": false,
+      "manifestRootsToUpdate": ["dist/{projectRoot}"]
+    }
+  },
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/plugins-backend-sdk",
+        "tsConfig": "libs/plugins-backend-sdk/tsconfig.lib.json",
+        "packageJson": "libs/plugins-backend-sdk/package.json",
+        "main": "libs/plugins-backend-sdk/src/index.ts",
+        "assets": ["libs/plugins-backend-sdk/*.md"]
+      }
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}",
+        "registry": "https://registry.npmjs.org/",
+        "access": "public"
+      }
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "label": "Datei hochladen",
+  "dragAndDrop": "Ziehen Sie ein Bild hierher oder klicken Sie, um es auszuwählen",
+  "acceptedFormats": "Akzeptierte Formate: JPEG, PNG, WebP (max. {{maxSize}}MB)",
+  "preview": "{{fileName}} ({{fileSize}}MB)",
+  "invalidFileType": "Ungültiger Dateityp",
+  "invalidFileTypeDescription": "Bitte laden Sie ein gültiges Bild hoch ({{allowedTypes}})",
+  "fileTooLarge": "Datei zu groß",
+  "fileTooLargeDescription": "Die Dateigröße muss kleiner als {{maxSize}}MB sein"
+}

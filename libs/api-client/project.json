@@ -1,0 +1,81 @@
+{
+  "name": "api-client",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/api-client/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project api-client --web",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/**/*",
+        "!{projectRoot}/**/*.spec.ts",
+        "!{projectRoot}/tsconfig.spec.json",
+        {
+          "externalDependencies": ["typescript"]
+        }
+      ],
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/api-client",
+        "tsConfig": "libs/api-client/tsconfig.lib.json",
+        "packageJson": "libs/api-client/package.json",
+        "main": "libs/api-client/src/index.ts",
+        "assets": ["libs/api-client/*.md"],
+        "clean": true
+      },
+      "dependsOn": ["generate"]
+    },
+    "generate": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/**/*",
+        "{workspaceRoot}/dist/apps/api-swagger/swagger.json",
+        "{projectRoot}/tools/swagger-generate.ts"
+      ],
+      "outputs": ["{projectRoot}/src/generated"],
+      "options": {
+        "command": "rm -rf libs/api-client/src/lib && ts-node --project tsconfig.json libs/api-client/tools/swagger-generate.ts"
+      },
+      "dependsOn": ["api:export-swagger"]
+    },
+    "nx-release-publish": {
+      "cache": true,
+      "options": {
+        "packageRoot": "dist/{projectRoot}",
+        "registry": "https://registry.npmjs.org/",
+        "access": "public"
+      }
+    },
+    "lint": {
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/**/*",
+        "{workspaceRoot}/.eslintrc.json",
+        "{workspaceRoot}/eslint.config.cjs",
+        "{projectRoot}/.eslintrc.json",
+        "{projectRoot}/eslint.config.cjs",
+        "{workspaceRoot}/tools/eslint-rules/**/*",
+        {
+          "externalDependencies": ["eslint"]
+        }
+      ],
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/**/*.spec.ts",
+        "{projectRoot}/tsconfig.spec.json",
+        "{workspaceRoot}/jest.preset.js",
+        {
+          "externalDependencies": ["jest"]
+        }
+      ],
+      "outputs": ["{workspaceRoot}/coverage/libs/api-client"]
+    }
+  }
+}

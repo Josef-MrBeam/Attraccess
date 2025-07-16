@@ -1,0 +1,188 @@
+name: Release
+
+on:
+  # Trigger on release creation
+  release:
+    types: [published]
+
+  # Allow manual triggering for testing
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version tag (e.g. v1.0.0, latest)'
+        required: true
+        default: 'latest'
+
+# Define environment variables
+env:
+  GHCR_IMAGE_NAME: ${{ vars.GHCR_IMAGE_NAME }}
+  DOCKERHUB_IMAGE_NAME: ${{ vars.DOCKERHUB_IMAGE_NAME }}
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  # Enable Docker BuildKit
+  DOCKER_BUILDKIT: 1
+  # Determine release version
+  RELEASE_VERSION: ${{ github.event_name == 'release' && github.event.release.tag_name || github.event.inputs.tag }}
+
+# Define permissions
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  # Build and test to ensure everything is working before release
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run everything
+        run: pnpm nx run-many --target=lint,typecheck,test,e2e,build
+
+      # Upload build artifacts to be used in Docker build
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            dist/
+
+  # Build and push Docker container
+  build-push-container:
+    needs: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Download build artifacts - Updated path to ensure dist directory structure is preserved
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist
+
+      # Login to GitHub Container Registry
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Login to Docker Hub
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Read Node.js version from .nvmrc
+      - name: Get Node.js Version
+        id: node-version
+        run: echo "NODE_VERSION=$(cat .nvmrc | tr -d '[:space:]')" >> $GITHUB_OUTPUT
+
+      # Add step to get short SHA
+      - name: Get short SHA
+        id: vars
+        run: echo "SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_OUTPUT
+
+      # Debug step to verify dist directory existence
+      - name: Debug dist directory
+        run: |
+          echo "Current directory structure:"
+          ls -la
+          echo "Dist directory contents:"
+          ls -la dist || echo "Dist directory not found"
+
+      # Build and push Docker image in one step
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ env.GHCR_IMAGE_NAME }}:latest
+            ghcr.io/${{ env.GHCR_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+            ghcr.io/${{ env.GHCR_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}-${{ steps.vars.outputs.SHORT_SHA }}
+            ${{ env.DOCKERHUB_IMAGE_NAME }}:latest
+            ${{ env.DOCKERHUB_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+            ${{ env.DOCKERHUB_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}-${{ steps.vars.outputs.SHORT_SHA }}
+          build-args: |
+            NODE_VERSION=${{ steps.node-version.outputs.NODE_VERSION }}
+
+      # Update GitHub Release with Docker image information
+      - name: Update GitHub Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ env.RELEASE_VERSION }}
+          body: |
+            ## Docker Image
+
+            ### GitHub Container Registry
+            ```bash
+            docker pull ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}:${{ env.RELEASE_VERSION }}
+            ```
+
+            ### Docker Hub
+            ```bash
+            docker pull ${{ env.DOCKERHUB_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+            ```
+
+            ### Image Details
+            - GitHub Registry: `ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}:${{ env.RELEASE_VERSION }}`
+            - Docker Hub: `${{ env.DOCKERHUB_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}`
+
+            ### Docker Run Example
+            ```bash
+            docker run -p 3000:3000 ${{ env.DOCKERHUB_IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+            ```
+
+            ### Links
+            - [GitHub Container Registry](https://github.com/${{ github.repository }}/pkgs/container/${{ github.repository_name }})
+            - [Docker Hub](https://hub.docker.com/r/${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }})
+          append_body: true
+
+  publish-npm-packages:
+    needs: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: pnpm/action-setup@v4
+
+      # Cache node_modules
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Download build artifacts - Updated path to ensure dist directory structure is preserved
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist
+
+      - name: Publish NPM packages
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+          pnpm exec nx release publish --yes

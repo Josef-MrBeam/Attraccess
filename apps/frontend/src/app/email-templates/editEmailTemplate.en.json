@@ -1,0 +1,25 @@
+{
+  "subtitle": "Modify the subject and body (MJML) content of the template.",
+  "templateType": {
+    "verify-email": "Email Verification",
+    "reset-password": "Password Reset"
+  },
+  "form": {
+    "subject": "Subject",
+    "mjmlDocumentation": "MJML Documentation"
+  },
+  "sections": {
+    "template": "Template",
+    "preview": "Preview"
+  },
+  "preview": {
+    "iframeTitle": "Body Preview",
+    "loading": "Loading...",
+    "errorPrefix": "Error loading preview."
+  },
+  "actions": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save Changes"
+  }
+}

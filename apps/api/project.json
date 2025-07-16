@@ -1,0 +1,178 @@
+{
+  "name": "api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api/src",
+  "projectType": "application",
+  "implicitDependencies": ["plugins-backend-sdk", "plugins-frontend-sdk"],
+  "tags": [],
+  "targets": {
+    "copy-attractap-assets": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["attractap-firmware:build", "attractap-touch-firmware:build"],
+      "options": {
+        "command": "node {projectRoot}/copy-attractap-assets.js"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": ["copy-attractap-assets"],
+      "inputs": [
+        "production",
+        "^production",
+        {
+          "externalDependencies": ["webpack-cli"]
+        }
+      ],
+      "outputs": ["{workspaceRoot}/dist/apps/api"],
+      "options": {
+        "cwd": "apps/api",
+        "command": "webpack-cli build",
+        "args": ["node-env=production"],
+        "tsPlugins": ["@nestjs/swagger/plugin"]
+      },
+      "configurations": {
+        "development": {
+          "args": ["node-env=development"]
+        }
+      }
+    },
+    "swagger-build": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["swagger"],
+      "outputs": ["{workspaceRoot}/dist/apps/{projectName}-swagger"],
+      "options": {
+        "command": "webpack-cli build",
+        "config": "apps/api/webpack.config.swagger.js",
+        "args": ["node-env=production"],
+        "output-path": "dist/apps/api-swagger"
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "continuous": true,
+      "dependsOn": [],
+      "options": {
+        "buildTarget": "api:build",
+        "watch": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "api:build:development"
+        },
+        "production": {
+          "buildTarget": "api:build:production"
+        }
+      }
+    },
+    "export-swagger": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["swagger-build"],
+      "cache": true,
+      "outputs": ["{workspaceRoot}/dist/apps/{projectName}-swagger/swagger.json"],
+      "options": {
+        "command": "AUTH_SESSION_SECRET=super-secret VITE_ATTRACCESS_URL=http://localhost:3000 AUTH_JWT_ORIGIN=ENV AUTH_JWT_SECRET=swagger-export-dummy-jwt-secret123 SMTP_SERVICE=SMTP SMTP_HOST=not-a-host SMTP_PORT=1234 SMTP_FROM=mail@attraccess.org FRONTEND_URL=http://localhost:4200 node dist/apps/api-swagger/main.js"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/jest.preset.js",
+        {
+          "externalDependencies": ["jest"]
+        }
+      ],
+      "outputs": ["{workspaceRoot}/coverage/apps/api"],
+      "options": {
+        "jestConfig": "apps/api/jest.config.ts",
+        "testMatch": ["**/*.spec.ts", "!**/*.e2e.spec.ts"],
+        "passWithNoTests": true
+      }
+    },
+    "e2e": {
+      "executor": "@nx/jest:jest",
+      "cache": true,
+      "inputs": ["testing", "^production"],
+      "outputs": ["{workspaceRoot}/coverage/apps/api-e2e"],
+      "options": {
+        "jestConfig": "apps/api/jest.config.ts",
+        "testMatch": ["**/*.e2e.spec.ts"],
+        "passWithNoTests": true
+      }
+    },
+    "start-services": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker compose -f docker-compose.dev.yml up -d --remove-orphans"
+      }
+    },
+    "build-migration-datasource": {
+      "executor": "@nx/webpack:webpack",
+      "cache": true,
+      "inputs": ["typeorm"],
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/migrations",
+        "main": "apps/api/src/database/datasource.ts",
+        "tsConfig": "apps/api/tsconfig.app.json",
+        "webpackConfig": "apps/api/webpack.config.migrations.js"
+      }
+    },
+    "migration-generate": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "dependsOn": ["build-migration-datasource"],
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "cwd": ".",
+        "commands": ["typeorm -d dist/apps/migrations/main.js migration:generate {args.name}"]
+      }
+    },
+    "migrations-run": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "dependsOn": ["build-migration-datasource"],
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "cwd": ".",
+        "commands": ["typeorm -d dist/apps/migrations/main.js migration:run"]
+      }
+    },
+
+    "migration-revert": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "dependsOn": ["build-migration-datasource"],
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "cwd": ".",
+        "commands": ["typeorm -d dist/apps/migrations/main.js migration:revert"]
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "default",
+        "^default",
+        "{workspaceRoot}/eslint.config.cjs",
+        "{projectRoot}/eslint.config.cjs",
+        "{workspaceRoot}/tools/eslint-rules/**/*",
+        {
+          "externalDependencies": ["eslint"]
+        }
+      ],
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cwd": "apps/api",
+        "command": "eslint .",
+        "max-warnings": 0
+      }
+    }
+  }
+}

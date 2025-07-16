@@ -1,0 +1,10 @@
+{
+  "scan": {
+    "error": {
+      "wrongOrigin": {
+        "title": "Falsche Quelladresse",
+        "description": "Die Quelladresse des QR-Codes ist nicht korrekt. Bitte überprüfen Sie die Adresse und versuchen Sie es erneut."
+      }
+    }
+  }
+}

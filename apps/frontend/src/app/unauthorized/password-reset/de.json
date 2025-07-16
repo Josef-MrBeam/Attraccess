@@ -1,0 +1,13 @@
+{
+    "title": "Passwort zurücksetzen",
+    "goBackButton": "Zurück",
+    "mainButton": "Passwort zurücksetzen",
+    "success": {
+        "title": "Passwort rücksetzung angefragt",
+        "description": "Überprüfe bitte dein E-Mail Postfach"
+    },
+    "error": {
+        "title": "Passwort zurücksetzen"
+    },
+    "emailLabel": "E-Mail"
+}

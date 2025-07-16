@@ -1,0 +1,13 @@
+{
+  "title": "Account verknüpfung erforderlich",
+  "subtitle": "Bitte verknüpfen Sie Ihr Konto mit Ihrem SSO-Konto",
+  "description": "Wir haben bereits ein Konto mit der E-Mail-Adresse {{email}} gefunden. Bitte geben Sie Ihr Passwort ein, um Ihr Konto mit Ihrem SSO-Konto zu verknüpfen.",
+  "inputs": {
+    "password": {
+      "label": "Passwort"
+    }
+  },
+  "actions": {
+    "link": "Konto verknüpfen"
+  }
+}

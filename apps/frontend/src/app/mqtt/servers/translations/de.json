@@ -1,0 +1,64 @@
+{
+  "title": "MQTT Server",
+  "addNewServer": "Neuen Server hinzufügen",
+  "errorLoading": "Fehler beim Laden der MQTT-Server.",
+  "noServersConfigured": "Noch keine MQTT-Server konfiguriert. Klicken Sie auf \"Neuen Server hinzufügen\", um einen zu erstellen.",
+
+  "name": "NAME",
+  "host": "HOST",
+  "port": "PORT",
+  "tls": "TLS",
+  "authentication": "AUTHENTIFIZIERUNG",
+  "actions": "AKTIONEN",
+
+  "enabled": "Aktiviert",
+  "disabled": "Deaktiviert",
+
+  "anonymous": "Anonym",
+
+  "testConnection": "Verbindung testen",
+  "editServer": "Server bearbeiten",
+  "deleteServer": "Server löschen",
+  "back": "Zurück",
+
+  "editMqttServer": "MQTT-Server bearbeiten",
+  "addNewMqttServer": "Neuen MQTT-Server hinzufügen",
+
+  "nameLabel": "Name",
+  "namePlaceholder": "Mein MQTT-Server",
+  "hostLabel": "Host",
+  "hostPlaceholder": "mqtt.beispiel.com",
+  "portLabel": "Port",
+  "portPlaceholder": "1883",
+  "clientIdLabel": "Client-ID (Optional)",
+  "clientIdPlaceholder": "attraccess-client",
+  "usernameLabel": "Benutzername (Optional)",
+  "usernamePlaceholder": "mqtt_benutzer",
+  "passwordLabel": "Passwort (Optional)",
+  "passwordPlaceholder": "••••••••",
+  "useTls": "TLS/SSL verwenden",
+
+  "cancel": "Abbrechen",
+  "update": "Server aktualisieren",
+  "create": "Server erstellen",
+
+  "deleteConfirmation": "Sind Sie sicher, dass Sie diesen MQTT-Server löschen möchten?",
+
+  "serverDeleted": "MQTT-Server gelöscht",
+  "serverDeletedDesc": "Der MQTT-Server wurde erfolgreich gelöscht.",
+  "serverUpdated": "MQTT-Server aktualisiert",
+  "serverUpdatedDesc": "Der MQTT-Server wurde erfolgreich aktualisiert.",
+  "serverCreated": "MQTT-Server erstellt",
+  "serverCreatedDesc": "Ein neuer MQTT-Server wurde erfolgreich erstellt.",
+  "connectionSuccessful": "Verbindung erfolgreich",
+  "connectionSuccessfulDesc": "Erfolgreich mit MQTT-Server verbunden",
+  "connectionFailed": "Verbindung fehlgeschlagen",
+  "connectionCheckError": "Verbindungsprüfungsfehler",
+  "invalidResponseFormat": "Ungültiges Antwortformat vom Server erhalten",
+  "connectionTestError": "Verbindungstestfehler",
+  "errorGeneric": "Fehler",
+  "failedToDelete": "Fehler beim Löschen des MQTT-Servers.",
+  "failedToUpdate": "Fehler beim Aktualisieren des MQTT-Servers.",
+  "failedToCreate": "Fehler beim Erstellen des MQTT-Servers.",
+  "failedToConnect": "Verbindung zum MQTT-Server fehlgeschlagen"
+} 

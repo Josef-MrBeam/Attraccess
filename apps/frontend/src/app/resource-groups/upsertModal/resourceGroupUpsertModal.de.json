@@ -1,0 +1,17 @@
+{
+  "modalTitleCreate": "Ressourcengruppe erstellen",
+  "modalTitleUpdate": "Ressourcengruppe aktualisieren",
+  "nameLabel": "Name",
+  "descriptionLabel": "Beschreibung",
+  "createButton": "Gruppe erstellen",
+  "updateButton": "Gruppe aktualisieren",
+  "cancelButton": "Abbrechen",
+  "successTitleCreate": "Gruppe erstellt",
+  "successDescriptionCreate": "Ressourcengruppe \"{{name}}\" wurde erfolgreich erstellt.",
+  "errorTitleCreate": "Erstellung fehlgeschlagen",
+  "errorDescriptionCreate": "Fehler beim Erstellen der Ressourcengruppe. Bitte versuchen Sie es erneut.",
+  "successTitleUpdate": "Gruppe aktualisiert",
+  "successDescriptionUpdate": "Ressourcengruppe \"{{name}}\" wurde erfolgreich aktualisiert.",
+  "errorTitleUpdate": "Aktualisierung fehlgeschlagen",
+  "errorDescriptionUpdate": "Fehler beim Aktualisieren der Ressourcengruppe. Bitte versuchen Sie es erneut."
+}

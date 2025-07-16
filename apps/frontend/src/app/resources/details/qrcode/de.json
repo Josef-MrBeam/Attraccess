@@ -1,0 +1,17 @@
+{
+  "button": {
+    "label": "QR-Code"
+  },
+  "modal": {
+    "title": "QR-Code",
+    "subtitle": "Konfiguriere deinen Resourcen QR-Code",
+    "action": {
+      "label": "Aktion beim Scannen",
+      "start": "Start",
+      "startAndTakeover": "Start und Übernehmen",
+      "stop": "Stop",
+      "view": "Nur anzeigen"
+    },
+    "download": "Download"
+  }
+}

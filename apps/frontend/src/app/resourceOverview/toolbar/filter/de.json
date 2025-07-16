@@ -1,0 +1,9 @@
+{
+  "drawer": {
+    "title": "Filtere Ressourcen",
+    "options": {
+      "onlyInUseByMe": "ist in Verwendung durch mich",
+      "onlyWithPermissions": "ich bin bereits Eingewiesen / Berechtigt"
+    }
+  }
+}

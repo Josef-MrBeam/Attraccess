@@ -1,0 +1,16 @@
+{
+  "button": {
+    "label": "QR Code"
+  },
+  "modal": {
+    "title": "QR Code",
+    "subtitle": "Configure your resource QR code",
+    "action": {
+      "label": "Action",
+      "start": "Start",
+      "startAndTakeover": "Start and takeover",
+      "stop": "Stop",
+      "view": "View"
+    }
+  }
+}

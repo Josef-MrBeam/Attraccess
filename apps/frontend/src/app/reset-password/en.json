@@ -1,0 +1,21 @@
+{
+    "title": "Reset Password",
+    "inputs": {
+        "password": "Password",
+        "confirmPassword": "Confirm Password"
+    },
+    "submit": "Reset Password",
+    "success": {
+        "title": "Reset Password",
+        "message": "Password reset successfully",
+        "goToLogin": "Go to Login"
+    },
+    "error": {
+        "title": "Reset Password",
+        "message": "Password could not be reset",
+        "passwordsDoNotMatch": {
+            "title": "Reset Password",
+            "description": "Passwords do not match"
+        }
+    }
+}

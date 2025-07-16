@@ -1,0 +1,51 @@
+services:
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - '8025:8025'
+      - '1025:1025'
+  
+  mqtt:
+    image: eclipse-mosquitto:2.0
+    ports:
+      - '1883:1883'
+      - '9001:9001'
+    volumes:
+      - ./config/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./data/mosquitto:/mosquitto/data
+      - ./log/mosquitto:/mosquitto/log
+
+  mqtt-explorer:
+    image: emqx/mqttx-web
+    ports:
+      - '4000:80'
+    depends_on:
+      - mqtt
+
+  webhook-site:
+    image: tarampampam/webhook-tester:latest
+    environment:
+      - STORAGE_DRIVER=fs
+      - FS_STORAGE_DIR=/storage
+    ports:
+      - '8084:8080'
+    volumes:
+      - ./data/webhook-site:/storage
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    command: start-dev
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=dev-file
+    ports:
+      - '8090:8080'
+    volumes:
+      - ./data/keycloak:/opt/keycloak/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+

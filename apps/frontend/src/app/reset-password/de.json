@@ -1,0 +1,21 @@
+{
+    "title": "Passwort zurücksetzen",
+    "inputs": {
+        "password": "Passwort",
+        "confirmPassword": "Passwort bestätigen"
+    },
+    "submit": "Passwort zurücksetzen",
+    "success": {
+        "title": "Passwort zurücksetzen",
+        "message": "Passwort wurde erfolgreich zurückgesetzt",
+        "goToLogin": "Zum Login"
+    },
+    "error": {
+        "title": "Passwort zurücksetzen",
+        "message": "Passwort konnte nicht zurückgesetzt werden",
+        "passwordsDoNotMatch": {
+            "title": "Passwort zurücksetzen",
+            "description": "Passwörter stimmen nicht überein"
+        }
+    }
+}

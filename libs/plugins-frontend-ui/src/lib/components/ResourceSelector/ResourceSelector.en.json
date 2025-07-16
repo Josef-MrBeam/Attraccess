@@ -1,0 +1,16 @@
+{
+  "search": {
+    "label": "Resources",
+    "placeholder": "Type to search"
+  },
+  "table": {
+    "columns": {
+      "name": {
+        "header": "Name"
+      }
+    }
+  },
+  "list": {
+    "label": "Assigned to"
+  }
+}

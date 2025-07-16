@@ -1,0 +1,31 @@
+{
+  "workInProgressAlert": "Diese Funktionen sind noch in Arbeit und werden bald verfügbar sein.",
+  "title": "Installierte Plugins",
+  "uploadButton": "Plugin hochladen",
+  "noPlugins": "Keine Plugins installiert",
+  "columns": {
+    "name": "Name",
+    "version": "0.0.16",
+    "directory": "Verzeichnis",
+    "actions": "Aktionen"
+  },
+  "deleteTooltip": "Plugin entfernen",
+  "deleteConfirmation": {
+    "title": "Löschen bestätigen",
+    "message": "Sind Sie sicher, dass Sie das Plugin {{pluginName}} entfernen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "cancel": "Abbrechen",
+    "delete": "Löschen"
+  },
+  "error": {
+    "delete": {
+      "title": "Fehler",
+      "description": "Fehler beim Löschen des Plugins"
+    }
+  },
+  "success": {
+    "delete": {
+      "title": "Erfolg",
+      "description": "Plugin erfolgreich entfernt, App wird in 1 Sekunde neu gestartet"
+    }
+  }
+}

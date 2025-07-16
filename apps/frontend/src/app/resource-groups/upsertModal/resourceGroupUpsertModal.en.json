@@ -1,0 +1,17 @@
+{
+  "modalTitleCreate": "Create Resource Group",
+  "modalTitleUpdate": "Update Resource Group",
+  "nameLabel": "Name",
+  "descriptionLabel": "Description",
+  "createButton": "Create Group",
+  "updateButton": "Update Group",
+  "cancelButton": "Cancel",
+  "successTitleCreate": "Group Created",
+  "successDescriptionCreate": "Resource group \"{{name}}\" was successfully created.",
+  "errorTitleCreate": "Creation Failed",
+  "errorDescriptionCreate": "Failed to create the resource group. Please try again.",
+  "successTitleUpdate": "Group Updated",
+  "successDescriptionUpdate": "Resource group \"{{name}}\" was successfully updated.",
+  "errorTitleUpdate": "Update Failed",
+  "errorDescriptionUpdate": "Failed to update the resource group. Please try again."
+}

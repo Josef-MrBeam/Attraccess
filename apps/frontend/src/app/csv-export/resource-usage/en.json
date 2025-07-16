@@ -1,0 +1,10 @@
+{
+    "downloadCsv": "Download CSV",
+    "refreshData": "Refresh Data",
+    "options": {
+        "groupByUserAndResource": "Group by User and Resource"
+    },
+    "columns": {
+        "label": "Columns"
+    }
+}

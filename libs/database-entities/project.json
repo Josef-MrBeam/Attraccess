@@ -1,0 +1,28 @@
+{
+  "name": "database-entities",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/database-entities/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/database-entities",
+        "tsConfig": "libs/database-entities/tsconfig.lib.json",
+        "packageJson": "libs/database-entities/package.json",
+        "main": "libs/database-entities/src/index.ts",
+        "assets": ["libs/database-entities/*.md"]
+      }
+    },
+    
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}",
+        "registry": "https://registry.npmjs.org/",
+        "access": "public"
+      }
+    }
+  }
+}

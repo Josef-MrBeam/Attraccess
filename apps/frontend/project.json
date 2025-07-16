@@ -1,0 +1,73 @@
+{
+  "name": "frontend",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/frontend/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "dependsOn": ["react-query-client:build", "copy-dependency-list"],
+      "cache": true,
+      "inputs": [
+        "production",
+        "^production",
+        {
+          "externalDependencies": ["vite"]
+        }
+      ],
+      "outputs": ["{workspaceRoot}/dist/apps/frontend"]
+    },
+    "copy-dependency-list": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["{workspaceRoot}/package.json", "{projectRoot}/extract-dependencies.js"],
+      "outputs": ["{projectRoot}/public/dependencies.json"],
+      "options": {
+        "command": "node apps/frontend/extract-dependencies.js"
+      }
+    },
+    "lint": {
+      "dependsOn": ["frontend:typecheck"],
+      "cache": true,
+      "inputs": [
+        "default",
+        "^default",
+        "{workspaceRoot}/eslint.config.cjs",
+        "{projectRoot}/eslint.config.cjs",
+        "{workspaceRoot}/tools/eslint-rules/**/*",
+        {
+          "externalDependencies": ["eslint"]
+        }
+      ],
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/jest.preset.js",
+        {
+          "externalDependencies": ["jest"]
+        }
+      ],
+      "outputs": ["{workspaceRoot}/coverage/apps/frontend"]
+    },
+    "typecheck": {
+      "cache": true,
+      "inputs": [
+        "production",
+        "^production",
+        {
+          "externalDependencies": ["typescript"]
+        }
+      ]
+    }
+  },
+  "targetDefaults": {
+    "serve": {
+      "port": 4200,
+      "strictPort": true
+    }
+  }
+}

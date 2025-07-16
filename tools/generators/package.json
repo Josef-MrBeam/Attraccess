@@ -1,0 +1,14 @@
+{
+  "name": "@attraccess/generators",
+  "version": "0.0.16",
+  "private": true,
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "dependencies": {
+    "@nx/devkit": "21.1.2",
+    "tslib": "^2.3.0",
+    "@nx/nest": "21.1.2"
+  },
+  "generators": "./generators.json"
+}

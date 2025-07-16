@@ -1,0 +1,19 @@
+{
+  "title": "Plugin hochladen",
+  "description": "Laden Sie ein Plugin als ZIP-Datei hoch. Das Plugin muss korrekt strukturiert sein und eine manifest.json-Datei enthalten.",
+  "fileInputDescription": "Wählen Sie eine .zip Plugin-Datei aus",
+  "selectedFile": "Ausgewählte Datei",
+  "upload": "Hochladen",
+  "cancel": "Abbrechen",
+  "success": {
+    "title": "Erfolg",
+    "description": "Plugin erfolgreich hochgeladen. Anwendung wird in 5 Sekunden neu gestartet."
+  },
+  "error": {
+    "title": "Fehler",
+    "description": "Fehler beim Hochladen des Plugins. Bitte überprüfen Sie das Dateiformat und versuchen Sie es erneut."
+  },
+  "errors": {
+    "invalidFile": "Bitte wählen Sie eine gültige .zip-Datei aus"
+  }
+} 

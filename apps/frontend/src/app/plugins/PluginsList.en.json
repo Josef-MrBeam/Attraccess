@@ -1,0 +1,31 @@
+{
+  "workInProgressAlert": "This feature is still under development and will be available soon.",
+  "title": "Installed Plugins",
+  "uploadButton": "Upload Plugin",
+  "noPlugins": "No plugins installed",
+  "columns": {
+    "name": "Name",
+    "version": "0.0.16",
+    "directory": "Directory",
+    "actions": "Actions"
+  },
+  "deleteTooltip": "Remove plugin",
+  "deleteConfirmation": {
+    "title": "Confirm Deletion",
+    "message": "Are you sure you want to remove the plugin <strong>{{pluginName}}</strong>? This action cannot be undone.",
+    "cancel": "Cancel",
+    "delete": "Delete"
+  },
+  "error": {
+    "delete": {
+      "title": "Error",
+      "description": "Error deleting plugin"
+    }
+  },
+  "success": {
+    "delete": {
+      "title": "Success",
+      "description": "Plugin deleted successfully, App will restart in 1 second"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+    "downloadCsv": "CSV herunterladen",
+    "refreshData": "Daten aktualisieren",
+    "options": {
+        "groupByUserAndResource": "Nutzung nach Benutzer und Ressource gruppieren"
+    },
+    "columns": {
+        "label": "Spalten"
+    }
+}

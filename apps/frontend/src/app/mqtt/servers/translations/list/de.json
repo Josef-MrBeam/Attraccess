@@ -1,0 +1,12 @@
+{
+  "editServer": "Server bearbeiten",
+  "deleteServer": "Server löschen",
+  "errorLoading": "Fehler beim Laden der MQTT-Server.",
+  "noServersConfigured": "Noch keine MQTT-Server konfiguriert. Klicken Sie auf \"Neuen Server hinzufügen\", um einen zu erstellen.",
+  "deleteConfirmation": "Sind Sie sicher, dass Sie diesen MQTT-Server löschen möchten?",
+  "serverDeleted": "MQTT-Server gelöscht",
+  "serverDeletedDesc": "Der MQTT-Server wurde erfolgreich gelöscht.",
+  "errorGeneric": "Fehler",
+  "failedToDelete": "Fehler beim Löschen des MQTT-Servers.",
+  "cancel": "Abbrechen"
+} 

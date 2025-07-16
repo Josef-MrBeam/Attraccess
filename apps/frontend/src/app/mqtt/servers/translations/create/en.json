@@ -1,0 +1,23 @@
+{
+  "addNewMqttServer": "Add New MQTT Server",
+  "back": "Back",
+  "nameLabel": "Name",
+  "namePlaceholder": "My MQTT Server",
+  "hostLabel": "Host",
+  "hostPlaceholder": "mqtt.example.com",
+  "portLabel": "Port",
+  "portPlaceholder": "1883",
+  "clientIdLabel": "Client ID (Optional)",
+  "clientIdPlaceholder": "attraccess-client",
+  "usernameLabel": "Username (Optional)",
+  "usernamePlaceholder": "mqtt_user",
+  "passwordLabel": "Password (Optional)",
+  "passwordPlaceholder": "••••••••",
+  "useTls": "Use TLS/SSL",
+  "cancel": "Cancel",
+  "create": "Create Server",
+  "serverCreated": "MQTT Server Created",
+  "serverCreatedDesc": "A new MQTT server has been successfully created.",
+  "errorGeneric": "Error",
+  "failedToCreate": "Failed to create MQTT server."
+} 
