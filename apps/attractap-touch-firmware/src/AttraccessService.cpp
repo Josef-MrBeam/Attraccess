@@ -1,6 +1,7 @@
 #include "AttraccessService.h"
 #include "MainScreenUI.h"
 #include "nfc.hpp"
+#include "LEDService.h"
 
 AttraccessService::AttraccessService()
     : wsClient(tcpClient, "/api/attractap/websocket"),
@@ -31,15 +32,12 @@ void AttraccessService::begin()
     // Load server configuration from settings
     Preferences settingsPrefs;
     settingsPrefs.begin("attraccess", true);
-    String hostname = settingsPrefs.getString("hostname", "");
-    String portStr = settingsPrefs.getString("port", "");
+    String hostnameFromPrefs = settingsPrefs.getString("hostname", "");
+    int16_t portFromPrefs = settingsPrefs.getShort("port", 0);
     settingsPrefs.end();
 
-    if (!hostname.isEmpty() && !portStr.isEmpty())
-    {
-        setServerConfig(hostname, portStr.toInt());
-        Serial.printf("AttraccessService: Loaded config - %s:%d\n", hostname.c_str(), portStr.toInt());
-    }
+    setServerConfig(hostnameFromPrefs, portFromPrefs);
+    Serial.printf("AttraccessService: Loaded config - %s:%d\n", hostnameFromPrefs.c_str(), portFromPrefs);
 
     setState(DISCONNECTED, "Service initialized");
     Serial.println("AttraccessService: Ready");
@@ -47,6 +45,8 @@ void AttraccessService::begin()
 
 void AttraccessService::update()
 {
+    LEDService::attraccessAuthenticated = currentState == AttraccessService::AUTHENTICATED;
+
     // Handle WebSocket events
     if (currentState >= CONNECTED)
     {
@@ -331,6 +331,7 @@ void AttraccessService::handleEventType(const String &type, const JsonObject &da
     }
     else if (type == "DISABLE_CARD_CHECKING")
     {
+        LEDService::waitForNFCTap = LEDService::WAIT_FOR_NFC_TAP_NONE;
         handleDisableCardCheckingEvent();
     }
     else if (type == "FIRMWARE_UPDATE_REQUIRED")
@@ -353,9 +354,15 @@ void AttraccessService::handleEventType(const String &type, const JsonObject &da
     {
         this->handleShowTextEvent(data);
     }
-    else if (type == "SELECT_ITEM")
+
+    if (type == "SELECT_ITEM")
     {
+        LEDService::waitForResourceSelection = true;
         this->handleSelectItemEvent(data);
+    }
+    else
+    {
+        LEDService::waitForResourceSelection = false;
     }
 }
 
@@ -497,6 +504,7 @@ void AttraccessService::handleEnableCardCheckingEvent(const JsonObject &data)
 
         if (isActive && activeUsageSession)
         {
+            LEDService::waitForNFCTap = LEDService::WAIT_FOR_NFC_TAP_USAGE_END;
             JsonObject user = activeUsageSession["user"];
             String username = user["username"].as<String>();
             // String duration = activeUsageSession["duration"].as<String>();
@@ -506,12 +514,15 @@ void AttraccessService::handleEnableCardCheckingEvent(const JsonObject &data)
         }
         else
         {
+            LEDService::waitForNFCTap = LEDService::WAIT_FOR_NFC_TAP_USAGE_START;
             content.message = resourceName + "\n\n" + "Tap to start using";
             content.textColor = 0x4CAF50; // Green (usage start)
         }
     }
     else if (payload["type"] == "enroll-nfc-card")
     {
+        LEDService::waitForNFCTap = LEDService::WAIT_FOR_NFC_TAP_ENROLL;
+
         JsonObject user = payload["user"];
         String username = user["username"].as<String>();
         content.message = "Tap to enroll NFC card\n\n(" + username + ")";
@@ -520,6 +531,8 @@ void AttraccessService::handleEnableCardCheckingEvent(const JsonObject &data)
     }
     else if (payload["type"] == "reset-nfc-card")
     {
+        LEDService::waitForNFCTap = LEDService::WAIT_FOR_NFC_TAP_RESET;
+
         JsonObject user = payload["user"];
         String username = user["username"].as<String>();
         JsonObject card = payload["card"];
@@ -530,6 +543,7 @@ void AttraccessService::handleEnableCardCheckingEvent(const JsonObject &data)
     }
     else
     {
+        LEDService::waitForNFCTap = LEDService::WAIT_FOR_NFC_TAP_NONE;
         Serial.printf("AttraccessService: Unknown payload type: %s\n", payload["type"].as<String>().c_str());
         return;
     }
@@ -993,4 +1007,19 @@ void AttraccessService::onAuthenticateNfcEvent(const JsonObject &data)
     doc["data"]["payload"]["authenticationSuccessful"] = success;
 
     this->sendJSONMessage(doc.as<JsonObject>());
+}
+
+String AttraccessService::getHostname()
+{
+    return serverHostname;
+}
+
+uint16_t AttraccessService::getPort()
+{
+    return serverPort;
+}
+
+String AttraccessService::getDeviceId()
+{
+    return deviceId;
 }

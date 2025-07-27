@@ -2,7 +2,9 @@
   "page": {
     "title": "Attractap",
     "actions": {
-      "openFlasher": "Attractap flasher"
+      "menu": "Geräte-Einrichtung",
+      "openHardwareSetup": "NFC-Leser Einrichten",
+      "openSerialConsole": "Serielle Konsole"
     }
   },
   "workInProgress": "Dieses Feature ist noch in Arbeit, benutzung auf eigene Gefahr!",
@@ -19,6 +21,14 @@
     "noData": "Keine Attractap gefunden",
     "actions": {
       "editReader": "Bearbeiten"
+    },
+    "active": {
+      "title": "Aktive Attractaps",
+      "description": "Verbunden innerhalb der letzten 24 Stunden"
+    },
+    "stale": {
+      "title": "Veraltete Attractaps",
+      "description": "Keine Verbindung seit mehr als 24 Stunden"
     }
   },
   "connected": "Verbunden",

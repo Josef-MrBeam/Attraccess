@@ -13,6 +13,8 @@
 #include "SettingsManager.h"
 #include "AttraccessService.h"
 #include "nfc.hpp"
+#include "CLIService.h"
+#include "LEDService.h"
 
 // for XPT2046 Touch ////////////////////////////////
 SPIClass xptSPI = SPIClass(VSPI);                 // SPI-Interface for XPT2046_Touchscreen
@@ -36,6 +38,8 @@ WiFiService wifiService;
 SettingsManager settingsManager;
 AttraccessService attraccessService;
 NFC nfc;
+CLIService cliService;
+LEDService ledService;
 
 // Initialization state
 bool setupComplete = false;
@@ -223,6 +227,10 @@ void setup()
   // Initialize I2C for NFC
   Wire.begin(PIN_I2C_SDA, PIN_I2C_SCL, I2C_FREQ);
 
+  // Initialize LED Service
+  Serial.println("0. Initializing LED Service...");
+  ledService.begin();
+
   // Start the SPI for the touch screen and init the XPT2046 library
   Serial.println("1. Initializing SPI and Touch...");
   xptSPI.begin(XPT2046_CLK, XPT2046_MISO, XPT2046_MOSI, XPT2046_CS);
@@ -323,9 +331,12 @@ void setup()
   attraccessService.setSelectItemCallback([](const String &label, const JsonArray &options)
                                           { mainScreenUI.showSelectItemDialog(label, options, [](const String &selectedId)
                                                                               {
+                                                                                Serial.printf("SELECT_ITEM callback: selectedId: %s\n", selectedId.c_str());
+                                                                                // Clean up the select dialog UI
+                                                                                mainScreenUI.cleanupSelectDialog();
                                                                                 // Send SELECT_ITEM response with selectedId
                                                                                 StaticJsonDocument<64> doc;
-                                                                                doc["selectedId"] = selectedId;
+                                                                                doc["selectedId"] = selectedId.c_str();
                                                                                 extern AttraccessService attraccessService;
                                                                                 attraccessService.sendMessage("SELECT_ITEM", doc.as<JsonObject>()); // Note: event type is SELECT_ITEM (response)
                                                                               }); });
@@ -359,6 +370,12 @@ void setup()
 
   // Initialize OTA
   Serial.println("9a. Initializing OTA...");
+
+  // Initialize CLI Service
+  Serial.println("9b. Initializing CLI Service...");
+  cliService.setWiFiService(&wifiService);
+  cliService.setAttraccessService(&attraccessService);
+  cliService.begin();
 
   // Mark setup as complete
   setupComplete = true;
@@ -400,6 +417,7 @@ void loop()
   }
 
   attraccessService.update(); // Update Attraccess service
+  cliService.update();        // Update CLI service
 
   // Handle navigation back to main screen from settings
   static bool wasSettingsVisible = false;

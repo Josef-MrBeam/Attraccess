@@ -35,8 +35,6 @@ export interface GatewayServices {
 
 @WebSocketGateway({ path: '/api/attractap/websocket' })
 export class AttractapGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  private static readonly SOCKET_HEARTBEAT_TIMEOUT = 30000;
-
   @WebSocketServer()
   server: Server;
 
@@ -78,6 +76,9 @@ export class AttractapGateway implements OnGatewayConnection, OnGatewayDisconnec
       (client as unknown as WebSocket).send(JSON.stringify(message));
     };
 
+    this.websocketService.sockets.set(client.id, client);
+
+    this.logger.debug('Transitioning to initial state');
     client.transitionToState(
       new InitialReaderState(client, {
         websocketService: this.websocketService,
@@ -88,8 +89,6 @@ export class AttractapGateway implements OnGatewayConnection, OnGatewayDisconnec
         firmwareService: this.firmwareService,
       })
     );
-
-    this.websocketService.sockets.set(client.id, client);
 
     await this.clientWasActive(client);
   }
