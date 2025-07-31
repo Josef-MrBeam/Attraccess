@@ -47,7 +47,7 @@ export function AttractapSerialConfiguratorAttraccess(props: Props) {
     const hostname = url.hostname;
     let port = url.port;
     if (!port.trim()) {
-      port = '80';
+      port = url.protocol === 'https:' ? '443' : '80';
     }
 
     return {
@@ -98,7 +98,6 @@ export function AttractapSerialConfiguratorAttraccess(props: Props) {
 
     if (data.status === 'connected') {
       console.debug('Attraccess-Status: connected, exiting');
-      return;
     }
 
     if (data.status === 'authenticated') {

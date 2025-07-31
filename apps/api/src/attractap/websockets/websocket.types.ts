@@ -10,23 +10,24 @@ interface AttractapMessageBaseData<TPayload = unknown> {
 }
 
 export enum AttractapEventType {
-  REGISTER = 'REGISTER',
-  AUTHENTICATE = 'AUTHENTICATE',
-  UNAUTHORIZED = 'UNAUTHORIZED',
+  READER_REGISTER = 'READER_REGISTER',
+  READER_AUTHENTICATE = 'READER_AUTHENTICATE',
+  NFC_AUTHENTICATE = 'NFC_AUTHENTICATE',
+  READER_UNAUTHORIZED = 'READER_UNAUTHORIZED',
   READER_AUTHENTICATED = 'READER_AUTHENTICATED',
   SHOW_TEXT = 'SHOW_TEXT',
   NFC_TAP = 'NFC_TAP',
-  CHANGE_KEYS = 'CHANGE_KEYS',
-  ENABLE_CARD_CHECKING = 'ENABLE_CARD_CHECKING',
-  DISABLE_CARD_CHECKING = 'DISABLE_CARD_CHECKING',
+  NFC_CHANGE_KEYS = 'NFC_CHANGE_KEYS',
+  NFC_ENABLE_CARD_CHECKING = 'NFC_ENABLE_CARD_CHECKING',
+  NFC_DISABLE_CARD_CHECKING = 'NFC_DISABLE_CARD_CHECKING',
   DISPLAY_SUCCESS = 'DISPLAY_SUCCESS',
   CLEAR_SUCCESS = 'CLEAR_SUCCESS',
   DISPLAY_ERROR = 'DISPLAY_ERROR',
   CLEAR_ERROR = 'CLEAR_ERROR',
-  REAUTHENTICATE = 'REAUTHENTICATE',
   CANCEL = 'CANCEL',
-  FIRMWARE_UPDATE_REQUIRED = 'FIRMWARE_UPDATE_REQUIRED',
-  FIRMWARE_INFO = 'FIRMWARE_INFO',
+  READER_FIRMWARE_UPDATE_REQUIRED = 'READER_FIRMWARE_UPDATE_REQUIRED',
+  READER_FIRMWARE_STREAM_CHUNK = 'READER_FIRMWARE_STREAM_CHUNK',
+  READER_FIRMWARE_INFO = 'READER_FIRMWARE_INFO',
   SELECT_ITEM = 'SELECT_ITEM',
 }
 
@@ -77,4 +78,24 @@ export interface AuthenticatedWebSocket extends Omit<WebSocket, 'send'> {
   state?: ReaderState;
   transitionToState: (state: ReaderState) => Promise<void>;
   sendMessage: (message: AttractapMessage) => void;
+  sendBinaryData: (data: Buffer) => void;
+}
+
+// Firmware update related types
+export interface FirmwareUpdateStartPayload {
+  size: number;
+  checksum?: string;
+  version?: string;
+  is_retry?: boolean;
+}
+
+export interface FirmwareUpdateResponse {
+  ready?: boolean;
+  success?: boolean;
+  error?: string;
+  bytes_received?: number;
+  duration_ms?: number;
+  retry_attempt?: number;
+  max_attempts?: number;
+  bytes_received_before_timeout?: number;
 }

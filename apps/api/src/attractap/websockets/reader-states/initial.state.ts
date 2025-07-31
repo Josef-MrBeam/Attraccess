@@ -11,6 +11,7 @@ import { AttractapFirmware } from '../../dtos/firmware.dto';
 
 export class InitialReaderState implements ReaderState {
   private waitingForFirmwareInfo = false;
+  private reauthenticateInterval: NodeJS.Timeout | null = null;
 
   private readonly logger = new Logger(InitialReaderState.name);
 
@@ -26,20 +27,38 @@ export class InitialReaderState implements ReaderState {
       return await this.onIsAuthenticated();
     }
 
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     this.logger.debug('InitialReaderState: not yet authenticated');
-    this.socket.sendMessage(new AttractapEvent(AttractapEventType.REAUTHENTICATE, {}));
+    this.socket.sendMessage(new AttractapEvent(AttractapEventType.READER_AUTHENTICATE, {}));
+
+    /*this.reauthenticateInterval = setInterval(() => {
+      if (this.socket.reader || this.socket.CLOSED) {
+        this.logger.debug('InitialReaderState: reauthenticate interval cleared', {
+          reader: this.socket.reader,
+          closed: this.socket.CLOSED,
+        });
+        clearInterval(this.reauthenticateInterval);
+        return;
+      }
+
+      this.socket.sendMessage(new AttractapEvent(AttractapEventType.READER_AUTHENTICATE, {}));
+    }, 1000 * 10);*/
   }
 
   public async onStateExit(): Promise<void> {
+    if (this.reauthenticateInterval) {
+      clearInterval(this.reauthenticateInterval);
+    }
     return;
   }
 
   public async onEvent(data: AttractapEvent['data']): Promise<void> {
     switch (data.type) {
-      case AttractapEventType.REGISTER:
+      case AttractapEventType.READER_REGISTER:
         return await this.handleRegisterEvent(data);
 
-      case AttractapEventType.AUTHENTICATE:
+      case AttractapEventType.READER_AUTHENTICATE:
         return await this.handleAuthenticateEvent(data);
 
       default:
@@ -52,7 +71,7 @@ export class InitialReaderState implements ReaderState {
     this.logger.debug(`Received response: ${JSON.stringify(data)}`);
 
     switch (data.type) {
-      case AttractapEventType.FIRMWARE_INFO:
+      case AttractapEventType.READER_FIRMWARE_INFO:
         return await this.onFirmwareInfo(data);
     }
   }
@@ -67,7 +86,7 @@ export class InitialReaderState implements ReaderState {
     this.socket.sendMessage(authenticatedResponse);
 
     this.waitingForFirmwareInfo = true;
-    this.socket.sendMessage(new AttractapEvent(AttractapEventType.FIRMWARE_INFO, {}));
+    this.socket.sendMessage(new AttractapEvent(AttractapEventType.READER_FIRMWARE_INFO, {}));
   }
 
   private async onFirmwareInfo(responseData: AttractapResponse['data']) {
@@ -76,6 +95,7 @@ export class InitialReaderState implements ReaderState {
     }
 
     await this.services.attractapService.updateReaderFirmware(this.socket.reader.id, responseData.payload);
+    this.socket.reader = await this.services.attractapService.findReaderById(this.socket.reader.id);
 
     const firmwareIsUpToDate = await this.isFirmwareLatest(responseData.payload);
     if (!firmwareIsUpToDate) {
@@ -116,12 +136,15 @@ export class InitialReaderState implements ReaderState {
         token: response.token,
       })
     );
+
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    return this.onStateEnter(true);
   }
 
   public async handleAuthenticateEvent(data: AttractapEvent['data']): Promise<void> {
-    this.logger.debug('processing AUTHENTICATE event', data);
+    this.logger.debug('processing READER_AUTHENTICATE event', data);
 
-    const unauthorizedResponse = new AttractapEvent(AttractapEventType.UNAUTHORIZED, {
+    const unauthorizedResponse = new AttractapEvent(AttractapEventType.READER_UNAUTHORIZED, {
       message: 'PLEASE_REREGISTER',
     });
 
