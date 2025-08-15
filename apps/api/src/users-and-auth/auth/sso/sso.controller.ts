@@ -14,6 +14,7 @@ import {
   UnauthorizedException,
   UseFilters,
   Logger,
+  BadRequestException,
 } from '@nestjs/common';
 import { SSOOIDCGuard } from './oidc/oidc.guard';
 import { AuthGuard } from '@nestjs/passport';
@@ -31,6 +32,7 @@ import { LinkUserToExternalAccountRequestDto } from './dto/link-user-to-external
 import { UsersService } from '../../users/users.service';
 import { AccountLinkingExceptionFilter } from './oidc/account-linking.exception-filter';
 import { CookieConfigService } from '../../../common/services/cookie-config.service';
+import { ApiBadRequestResponse } from '@nestjs/swagger';
 
 @ApiTags('Authentication')
 @Controller('auth/sso')
@@ -189,6 +191,62 @@ export class SSOController {
     return this.ssoService.deleteProvider(parseInt(id, 10));
   }
 
+  @Get('discovery/authentik')
+  @Auth('canManageSystemConfiguration')
+  @ApiOperation({ summary: 'Proxy Authentik OIDC well-known discovery', operationId: 'discoverAuthentikOidc' })
+  @ApiQuery({ name: 'host', required: true, description: 'Authentik host, e.g. http://localhost:9000' })
+  @ApiQuery({ name: 'applicationName', required: true, description: 'Authentik application slug' })
+  @ApiResponse({ status: 200, description: 'OIDC configuration JSON' })
+  @ApiBadRequestResponse({ description: 'Invalid host or applicationName' })
+  async discoverAuthentik(@Query('host') host: string, @Query('applicationName') applicationName: string) {
+    if (!host || !applicationName) {
+      throw new BadRequestException('Missing required parameters');
+    }
+
+    const trimmedHost = host.endsWith('/') ? host.slice(0, -1) : host;
+    const hasProtocol = /^https?:\/\//i.test(trimmedHost);
+    const origin = hasProtocol ? trimmedHost : `http://${trimmedHost}`;
+    const targetUrl = `${origin}/application/o/${encodeURIComponent(applicationName)}/.well-known/openid-configuration`;
+
+    const response = await fetch(targetUrl, {
+      headers: { Accept: 'application/json' },
+    });
+
+    if (!response.ok) {
+      throw new UnauthorizedException(`Failed to fetch discovery: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  @Get('discovery/keycloak')
+  @Auth('canManageSystemConfiguration')
+  @ApiOperation({ summary: 'Proxy Keycloak OIDC well-known discovery', operationId: 'discoverKeycloakOidc' })
+  @ApiQuery({ name: 'host', required: true, description: 'Keycloak host, e.g. http://localhost:8080' })
+  @ApiQuery({ name: 'realm', required: true, description: 'Keycloak realm name' })
+  @ApiResponse({ status: 200, description: 'OIDC configuration JSON' })
+  @ApiBadRequestResponse({ description: 'Invalid host or realm' })
+  async discoverKeycloak(@Query('host') host: string, @Query('realm') realm: string) {
+    if (!host || !realm) {
+      throw new BadRequestException('Missing required parameters');
+    }
+
+    const trimmedHost = host.endsWith('/') ? host.slice(0, -1) : host;
+    const hasProtocol = /^https?:\/\//i.test(trimmedHost);
+    const origin = hasProtocol ? trimmedHost : `http://${trimmedHost}`;
+    const targetUrl = `${origin}/realms/${encodeURIComponent(realm)}/.well-known/openid-configuration`;
+
+    const response = await fetch(targetUrl, {
+      headers: { Accept: 'application/json' },
+    });
+
+    if (!response.ok) {
+      throw new UnauthorizedException(`Failed to fetch discovery: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
   @Get(`/${SSOProviderType.OIDC}/:providerId/login`)
   @ApiOperation({
     summary: 'Login with OIDC',
@@ -253,8 +311,7 @@ export class SSOController {
   async oidcLoginCallback(
     @Req() request: AuthenticatedRequest,
     @Query('redirectTo') redirectTo: string,
-    @Res({ passthrough: true }) response: Response,
-    @Query('tokenLocation') tokenLocation: 'cookie' | 'body'
+    @Res({ passthrough: true }) response: Response
   ): Promise<CreateSessionResponse | void> {
     // Create session token using SessionService
     const sessionToken = await this.sessionService.createSession(request.user, {
@@ -262,24 +319,12 @@ export class SSOController {
       ipAddress: request.ip || request.connection.remoteAddress,
     });
 
-    let auth: CreateSessionResponse;
+    this.cookieConfigService.setAuthCookie(response, sessionToken);
 
-    if (tokenLocation === 'cookie') {
-      // Set HTTP-only cookie for web browsers
-      this.cookieConfigService.setAuthCookie(response, sessionToken);
-
-      // Return user data without token for web browsers using cookies
-      auth = {
-        user: request.user,
-        authToken: '', // Empty token for web browsers using cookies
-      };
-    } else {
-      // Return token in response body for programmatic clients
-      auth = {
-        user: request.user,
-        authToken: sessionToken,
-      };
-    }
+    const auth: CreateSessionResponse = {
+      user: request.user,
+      authToken: sessionToken,
+    };
 
     if (redirectTo) {
       const urlWithAuth = new URL(redirectTo);
@@ -289,14 +334,7 @@ export class SSOController {
       urlWithAuth.searchParams.delete('ssoProviderId');
       urlWithAuth.searchParams.delete('ssoProviderType');
 
-      if (tokenLocation === 'cookie') {
-        // For web browsers, don't include auth in URL since we're using cookies
-        // Just include user data for frontend initialization
-        urlWithAuth.searchParams.set('user', JSON.stringify(auth.user));
-      } else {
-        // For programmatic clients, include full auth data
-        urlWithAuth.searchParams.set('auth', JSON.stringify(auth));
-      }
+      urlWithAuth.searchParams.set('user', JSON.stringify(auth.user));
 
       this.logger.debug('Redirecting to', urlWithAuth.toString());
       return response.redirect(urlWithAuth.toString());

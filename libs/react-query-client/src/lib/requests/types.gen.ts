@@ -1720,6 +1720,32 @@ export type DeleteOneSsoProviderData = {
 
 export type DeleteOneSsoProviderResponse = unknown;
 
+export type DiscoverAuthentikOidcData = {
+    /**
+     * Authentik application slug
+     */
+    applicationName: string;
+    /**
+     * Authentik host, e.g. http://localhost:9000
+     */
+    host: string;
+};
+
+export type DiscoverAuthentikOidcResponse = unknown;
+
+export type DiscoverKeycloakOidcData = {
+    /**
+     * Keycloak host, e.g. http://localhost:8080
+     */
+    host: string;
+    /**
+     * Keycloak realm name
+     */
+    realm: string;
+};
+
+export type DiscoverKeycloakOidcResponse = unknown;
+
 export type LoginWithOidcData = {
     /**
      * The ID of the SSO provider
@@ -1743,7 +1769,6 @@ export type OidcLoginCallbackData = {
     redirectTo: string;
     sessionState: unknown;
     state: unknown;
-    tokenLocation: string;
 };
 
 export type OidcLoginCallbackResponse = CreateSessionResponse;
@@ -2797,6 +2822,44 @@ export type $OpenApiTs = {
                  * Provider not found
                  */
                 404: unknown;
+            };
+        };
+    };
+    '/api/auth/sso/discovery/authentik': {
+        get: {
+            req: DiscoverAuthentikOidcData;
+            res: {
+                /**
+                 * OIDC configuration JSON
+                 */
+                200: unknown;
+                /**
+                 * Invalid host or applicationName
+                 */
+                400: unknown;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+            };
+        };
+    };
+    '/api/auth/sso/discovery/keycloak': {
+        get: {
+            req: DiscoverKeycloakOidcData;
+            res: {
+                /**
+                 * OIDC configuration JSON
+                 */
+                200: unknown;
+                /**
+                 * Invalid host or realm
+                 */
+                400: unknown;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
             };
         };
     };
