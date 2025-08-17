@@ -370,3 +370,4 @@ export type AccessControlServiceResourceIntroducersRevokeMutationResult = Awaite
 export type AccessControlServiceResourceIntroductionsRevokeMutationResult = Awaited<ReturnType<typeof AccessControlService.resourceIntroductionsRevoke>>;
 export type ResourceMaintenancesServiceCancelMaintenanceMutationResult = Awaited<ReturnType<typeof ResourceMaintenancesService.cancelMaintenance>>;
 export type PluginsServiceDeletePluginMutationResult = Awaited<ReturnType<typeof PluginsService.deletePlugin>>;
+export type AttractapServiceDeleteReaderMutationResult = Awaited<ReturnType<typeof AttractapService.deleteReader>>;

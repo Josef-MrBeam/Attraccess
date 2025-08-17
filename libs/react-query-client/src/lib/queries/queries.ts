@@ -479,3 +479,8 @@ export const usePluginsServiceDeletePlugin = <TData = Common.PluginsServiceDelet
 }, TContext>, "mutationFn">) => useMutation<TData, TError, {
   pluginId: string;
 }, TContext>({ mutationFn: ({ pluginId }) => PluginsService.deletePlugin({ pluginId }) as unknown as Promise<TData>, ...options });
+export const useAttractapServiceDeleteReader = <TData = Common.AttractapServiceDeleteReaderMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
+  readerId: number;
+}, TContext>, "mutationFn">) => useMutation<TData, TError, {
+  readerId: number;
+}, TContext>({ mutationFn: ({ readerId }) => AttractapService.deleteReader({ readerId }) as unknown as Promise<TData>, ...options });

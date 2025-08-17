@@ -2364,6 +2364,15 @@ export type GetReaderByIdData = {
 
 export type GetReaderByIdResponse = Attractap;
 
+export type DeleteReaderData = {
+    /**
+     * The ID of the reader to delete
+     */
+    readerId: number;
+};
+
+export type DeleteReaderResponse = unknown;
+
 export type GetReadersResponse = Array<Attractap>;
 
 export type GetAppKeyByUidData = {
@@ -3991,6 +4000,19 @@ export type $OpenApiTs = {
                  * Reader not found
                  */
                 404: unknown;
+            };
+        };
+        delete: {
+            req: DeleteReaderData;
+            res: {
+                /**
+                 * Reader deleted successfully
+                 */
+                200: unknown;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
             };
         };
     };
