@@ -1,6 +1,6 @@
 import { NodeProps, useNodeId, useNodesData } from '@xyflow/react';
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from '@heroui/react';
-import { Select } from '../../../../../../components/select';
+
 import { useTranslations } from '@attraccess/plugins-frontend-ui';
 import { useCallback, useState } from 'react';
 import { PageHeader } from '../../../../../../components/pageHeader';
@@ -18,7 +18,7 @@ interface Props {
   previewMode?: boolean;
 }
 
-export function WaitNode(
+export function ButtonNode(
   props: NodeProps & {
     data: unknown;
   } & Props
@@ -27,10 +27,9 @@ export function WaitNode(
   const node = useNodesData(nodeId as string);
   const { updateNodeData } = useFlowContext();
 
-  const [duration, setDuration] = useState<number>((node?.data.duration as number) ?? 0);
-  const [unit, setUnit] = useState<string>((node?.data.unit as string) ?? 'seconds');
+  const [label, setLabel] = useState<string>((node?.data.label as string) ?? '');
 
-  const { t } = useTranslations('resource-flows.node.action.util.wait.wrapper', {
+  const { t } = useTranslations('resource-flows.node.action.util.button.wrapper', {
     de: {
       ...de,
       nodes: nodeTranslationsDe,
@@ -54,54 +53,29 @@ export function WaitNode(
     }
 
     updateNodeData(nodeId, {
-      duration,
-      unit,
+      label,
     });
 
     onCloseEditor();
-  }, [duration, unit, nodeId, updateNodeData, onCloseEditor]);
+  }, [label, nodeId, updateNodeData, onCloseEditor]);
 
   return (
     <BaseNodeCard
-      title={t('nodes.processing.wait.title')}
-      subtitle={t('nodes.processing.wait.description')}
+      title={t('nodes.input.button.title')}
+      subtitle={t('nodes.input.button.description')}
       previewMode={props.previewMode}
-      inputs={[{ id: 'input' }]}
       outputs={[{ id: 'output' }]}
       actions={<Button size="sm" isIconOnly startContent={<Edit2Icon size={12} />} onPress={onOpenEditor} />}
     >
-      <Input
-        label={t('editor.inputs.duration.label')}
-        isReadOnly
-        value={`${String(node?.data.duration ?? 0)} ${t('units.' + String(node?.data.unit ?? 'seconds'))}`}
-      />
+      <Input label={t('editor.inputs.label.label')} isReadOnly value={label} />
 
       <Modal isOpen={isEditorOpen} onOpenChange={onOpenChangeEditor}>
         <ModalContent>
           <ModalHeader>
-            <PageHeader
-              title={t('nodes.processing.wait.title')}
-              subtitle={t('nodes.processing.wait.description')}
-              noMargin
-            />
+            <PageHeader title={t('nodes.input.button.title')} subtitle={t('nodes.input.button.description')} noMargin />
           </ModalHeader>
           <ModalBody>
-            <Input
-              type="number"
-              label={t('editor.inputs.duration.label')}
-              value={String(duration)}
-              onChange={(e) => setDuration(Number(e.target.value))}
-            />
-            <Select
-              label={t('editor.inputs.unit.label')}
-              selectedKey={unit}
-              onSelectionChange={(key) => setUnit(key)}
-              items={[
-                { key: 'seconds', label: t('units.seconds') },
-                { key: 'minutes', label: t('units.minutes') },
-                { key: 'hours', label: t('units.hours') },
-              ]}
-            />
+            <Input label={t('editor.inputs.label.label')} value={label} onValueChange={(value) => setLabel(value)} />
           </ModalBody>
           <ModalFooter>
             <Button onPress={onCloseEditor}>{t('editor.buttons.close')}</Button>

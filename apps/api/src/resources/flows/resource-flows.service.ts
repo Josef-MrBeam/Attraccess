@@ -143,7 +143,9 @@ export class ResourceFlowsService {
         const edge = new ResourceFlowEdge();
         edge.id = edgeData.id;
         edge.source = edgeData.source;
+        edge.sourceHandle = edgeData.sourceHandle;
         edge.target = edgeData.target;
+        edge.targetHandle = edgeData.targetHandle;
         edge.resource = resource;
         return edge;
       });
@@ -197,5 +199,11 @@ export class ResourceFlowsService {
       page,
       limit,
     };
+  }
+
+  public async getNodes(resourceId: number, type: ResourceFlowNodeType): Promise<ResourceFlowNode[]> {
+    return await this.flowNodeRepository.find({
+      where: { resourceId, type },
+    });
   }
 }

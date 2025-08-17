@@ -1143,7 +1143,7 @@ export type ResourceFlowNodeDto = {
     /**
      * The type of the node
      */
-    type: 'event.resource.usage.started' | 'event.resource.usage.stopped' | 'event.resource.usage.takeover' | 'action.http.sendRequest' | 'action.mqtt.sendMessage' | 'action.util.wait';
+    type: 'input.button' | 'input.resource.usage.started' | 'input.resource.usage.stopped' | 'input.resource.usage.takeover' | 'output.http.sendRequest' | 'output.mqtt.sendMessage' | 'processing.wait' | 'processing.if';
     /**
      * The position of the node
      */
@@ -1160,12 +1160,14 @@ export type ResourceFlowNodeDto = {
  * The type of the node
  */
 export enum type2 {
-    EVENT_RESOURCE_USAGE_STARTED = 'event.resource.usage.started',
-    EVENT_RESOURCE_USAGE_STOPPED = 'event.resource.usage.stopped',
-    EVENT_RESOURCE_USAGE_TAKEOVER = 'event.resource.usage.takeover',
-    ACTION_HTTP_SEND_REQUEST = 'action.http.sendRequest',
-    ACTION_MQTT_SEND_MESSAGE = 'action.mqtt.sendMessage',
-    ACTION_UTIL_WAIT = 'action.util.wait'
+    INPUT_BUTTON = 'input.button',
+    INPUT_RESOURCE_USAGE_STARTED = 'input.resource.usage.started',
+    INPUT_RESOURCE_USAGE_STOPPED = 'input.resource.usage.stopped',
+    INPUT_RESOURCE_USAGE_TAKEOVER = 'input.resource.usage.takeover',
+    OUTPUT_HTTP_SEND_REQUEST = 'output.http.sendRequest',
+    OUTPUT_MQTT_SEND_MESSAGE = 'output.mqtt.sendMessage',
+    PROCESSING_WAIT = 'processing.wait',
+    PROCESSING_IF = 'processing.if'
 }
 
 export type ResourceFlowEdgeDto = {
@@ -1178,9 +1180,17 @@ export type ResourceFlowEdgeDto = {
      */
     source: string;
     /**
+     * The source handle id
+     */
+    sourceHandle?: string | null;
+    /**
      * The target node id
      */
     target: string;
+    /**
+     * The target handle id
+     */
+    targetHandle?: string | null;
 };
 
 export type ValidationErrorDto = {
@@ -1288,6 +1298,54 @@ export type ResourceFlowLogsResponseDto = {
      * Array of flow log entries, ordered by creation time (newest first)
      */
     data: Array<ResourceFlowLog>;
+};
+
+export type ResourceFlowNodePosition = {
+    /**
+     * The x position of the node
+     */
+    x: number;
+    /**
+     * The y position of the node
+     */
+    y: number;
+};
+
+export type ResourceFlowNode = {
+    /**
+     * The unique identifier of the resource flow node
+     */
+    id: string;
+    /**
+     * The type of the node
+     */
+    type: string;
+    /**
+     * The position of the node
+     */
+    position: ResourceFlowNodePosition;
+    /**
+     * The data of the node, depending on the type of the node
+     */
+    data: {
+        [key: string]: unknown;
+    };
+    /**
+     * When the node was created
+     */
+    createdAt?: string;
+    /**
+     * When the node was last updated
+     */
+    updatedAt?: string;
+    /**
+     * The id of the resource that this node belongs to
+     */
+    resourceId: number;
+    /**
+     * The resource being this node belongs to
+     */
+    resource?: Resource;
 };
 
 export type PluginMainFrontend = {
@@ -2313,6 +2371,27 @@ export type ResourceFlowsControllerStreamEventsData = {
 };
 
 export type ResourceFlowsControllerStreamEventsResponse = unknown;
+
+export type PressButtonData = {
+    /**
+     * The ID of the button to press
+     */
+    buttonId: string;
+    resourceId: number;
+};
+
+export type PressButtonResponse = {
+    message?: string;
+};
+
+export type GetButtonsData = {
+    /**
+     * The ID of the resource to get buttons for
+     */
+    resourceId: number;
+};
+
+export type GetButtonsResponse = Array<ResourceFlowNode>;
 
 export type GetPluginsResponse = Array<LoadedPluginManifest>;
 
@@ -3889,6 +3968,54 @@ export type $OpenApiTs = {
                  * Unauthorized
                  */
                 401: unknown;
+            };
+        };
+    };
+    '/api/resources/{resourceId}/flow/buttons/{buttonId}/press': {
+        post: {
+            req: PressButtonData;
+            res: {
+                /**
+                 * Button pressed successfully
+                 */
+                200: {
+                    message?: string;
+                };
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+                /**
+                 * Insufficient permissions to manage resources
+                 */
+                403: unknown;
+                /**
+                 * Button not found
+                 */
+                404: unknown;
+            };
+        };
+    };
+    '/api/resources/{resourceId}/flow/buttons': {
+        get: {
+            req: GetButtonsData;
+            res: {
+                /**
+                 * Buttons retrieved successfully
+                 */
+                200: Array<ResourceFlowNode>;
+                /**
+                 * Unauthorized
+                 */
+                401: unknown;
+                /**
+                 * Insufficient permissions to manage resources
+                 */
+                403: unknown;
+                /**
+                 * Resource not found
+                 */
+                404: unknown;
             };
         };
     };
