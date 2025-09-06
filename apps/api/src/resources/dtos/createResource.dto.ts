@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsOptional, MinLength, IsEnum, IsUrl, ValidateIf, IsBoolean } from 'class-validator';
 import { FileUpload } from '../../common/types/file-upload.types';
-import { DocumentationType } from '@attraccess/database-entities';
+import { DocumentationType, ResourceType } from '@attraccess/database-entities';
 import { ToBoolean } from '../../common/request-transformers';
 
 export class CreateResourceDto {
@@ -12,6 +12,25 @@ export class CreateResourceDto {
   @IsString()
   @MinLength(1)
   name: string;
+
+  @ApiProperty({
+    description: 'The type of the resource',
+    example: ResourceType.Machine,
+    enum: ResourceType,
+  })
+  @IsEnum(ResourceType)
+  type: ResourceType;
+
+  @ApiProperty({
+    description: '(only for doors) wheter the door needs seperate actions for unlocking and unlatching',
+    example: false,
+    default: false,
+    required: false,
+  })
+  @IsBoolean()
+  @IsOptional()
+  @ToBoolean()
+  separateUnlockAndUnlatch?: boolean;
 
   @ApiProperty({
     description: 'A detailed description of the resource',
