@@ -39,6 +39,7 @@ import { ResourceFlowEdge } from './entities/resourceFlowEdge';
 import { ResourceFlowLog, ResourceFlowLogType } from './entities/resourceFlowLog';
 import { ResourceMaintenance } from './entities/resource.maintenance';
 import { ResourceUsageAction } from './entities/resourceUsage.type';
+import { BillingTransaction } from './entities/billing-transaction.entity';
 
 // Export all entities individually
 export {
@@ -83,6 +84,7 @@ export {
   ResourceUsageAction,
   ButtonNodeDataSchema,
   IfNodeDataSchema,
+  BillingTransaction,
 };
 
 // Export the entities object
@@ -107,4 +109,5 @@ export const entities = {
   ResourceFlowEdge,
   ResourceFlowLog,
   ResourceMaintenance,
+  BillingTransaction,
 };
