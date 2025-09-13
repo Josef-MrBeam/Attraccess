@@ -6,13 +6,9 @@ import { compile as handlebarsCompile } from 'handlebars';
 export const I18N_LANGUAGE_STORAGE_KEY = 'language';
 type TranslationRecord = Record<string, unknown>;
 
-interface TranslationModule {
-  default: TranslationRecord;
-}
-
-interface TranslationModules {
-  en: TranslationModule | TranslationRecord;
-  de: TranslationModule | TranslationRecord;
+interface TranslationModules<T extends TranslationRecord = TranslationRecord> {
+  en: T;
+  de: T;
 }
 
 type Language = keyof TranslationModules;
@@ -31,10 +27,11 @@ export const useTranslationState = create<TranslationState>((set) => ({
 }));
 
 export type TFunction = (key: string, data?: Record<string, unknown>) => string;
+export type TExists = (key: string) => boolean;
 
 interface UseTranslationsResponse {
   t: TFunction;
-  tExists: (key: string) => boolean;
+  tExists: TExists;
   language: Language;
   setLanguage: (language: Language) => void;
 }
