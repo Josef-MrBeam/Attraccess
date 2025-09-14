@@ -30,6 +30,7 @@ import { ResourceQrCode } from './qrcode';
 import { useQrCodeAction } from './useQrCodeAction';
 import { filenameToUrl } from '../../../api';
 import { MaintenanceManagement } from './maintenance-management';
+import { ResourceBillingInfo } from './resourceBillingInfo';
 
 function ResourceDetailsComponent() {
   const { id } = useParams<{ id: string }>();
@@ -44,7 +45,7 @@ function ResourceDetailsComponent() {
   const { success, error: showError } = useToastMessage();
   useQrCodeAction({ resourceId });
 
-  const { t } = useTranslations('resourceDetails', {
+  const { t } = useTranslations({
     en,
     de,
   });
@@ -58,7 +59,7 @@ function ResourceDetailsComponent() {
       includeGroups: true,
     },
     undefined,
-    { enabled: !!user?.id }
+    { enabled: !!user?.id },
   );
 
   const {
@@ -183,14 +184,16 @@ function ResourceDetailsComponent() {
         }
       />
 
-      {/* Full width Usage section for all devices */}
       <div className="w-full space-y-6 mb-6">
-        <ResourceUsageSession
-          resourceId={resourceId}
-          resource={resource}
-          data-cy="resource-usage-session"
-          className="flex-1 min-w-80"
-        />
+        <div className="flex flex-row flex-wrap w-full gap-6 items-stretch">
+          <ResourceUsageSession
+            resourceId={resourceId}
+            resource={resource}
+            data-cy="resource-usage-session"
+            className="sm:flex-1 flex-grow"
+          />
+          <ResourceBillingInfo resourceId={resourceId} className="sm:flex-none flex-grow" />
+        </div>
 
         <div className="flex flex-row flex-wrap w-full gap-6 items-stretch">
           <ResourceUsageHistory resourceId={resourceId} data-cy="resource-usage-history" className="flex-grow" />

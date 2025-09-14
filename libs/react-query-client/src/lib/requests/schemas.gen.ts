@@ -45,9 +45,14 @@ export const $SystemPermissions = {
             type: 'boolean',
             description: 'Whether the user can manage users',
             example: false
+        },
+        canManageBilling: {
+            type: 'boolean',
+            description: 'Whether the user can manage billing',
+            example: false
         }
     },
-    required: ['canManageResources', 'canManageSystemConfiguration', 'canManageUsers']
+    required: ['canManageResources', 'canManageSystemConfiguration', 'canManageUsers', 'canManageBilling']
 } as const;
 
 export const $User = {
@@ -96,9 +101,13 @@ export const $User = {
             description: 'The external (origin) identifier of the user, if the user is authenticated via SSO',
             example: '1234567890',
             nullable: true
+        },
+        creditBalance: {
+            type: 'number',
+            description: 'The credit balance of the user'
         }
     },
-    required: ['id', 'username', 'isEmailVerified', 'systemPermissions', 'createdAt', 'updatedAt']
+    required: ['id', 'username', 'isEmailVerified', 'systemPermissions', 'createdAt', 'updatedAt', 'creditBalance']
 } as const;
 
 export const $VerifyEmailDto = {
@@ -1711,6 +1720,223 @@ export const $UpdateMaintenanceDto = {
             example: 'Scheduled maintenance for software updates'
         }
     }
+} as const;
+
+export const $BalanceDto = {
+    type: 'object',
+    properties: {
+        value: {
+            type: 'number',
+            description: 'The balance of the user'
+        }
+    },
+    required: ['value']
+} as const;
+
+export const $BillingTransaction = {
+    type: 'object',
+    properties: {
+        id: {
+            type: 'number',
+            description: 'The unique identifier of the billing transaction',
+            example: 1
+        },
+        userId: {
+            type: 'number',
+            description: 'The ID of the user',
+            example: 1
+        },
+        user: {
+            description: 'The user who the billing transaction belongs to',
+            allOf: [
+                {
+                    '$ref': '#/components/schemas/User'
+                }
+            ]
+        },
+        createdAt: {
+            format: 'date-time',
+            type: 'string',
+            description: 'The date and time the billing transaction was created'
+        },
+        updatedAt: {
+            format: 'date-time',
+            type: 'string',
+            description: 'The date and time the billing transaction was last updated'
+        },
+        amount: {
+            type: 'number',
+            description: 'The credit amount of the billing transaction (negative for refunds/top-ups)'
+        },
+        initiatorId: {
+            type: 'number',
+            description: 'The user ID of the user who caused the billing transaction'
+        },
+        initiator: {
+            description: 'The user who initiated the billing transaction',
+            allOf: [
+                {
+                    '$ref': '#/components/schemas/User'
+                }
+            ]
+        },
+        resourceUsageId: {
+            type: 'number',
+            description: 'The resource usage ID of the resource usage that caused the billing transaction'
+        },
+        resourceUsage: {
+            description: 'The resource usage that caused the billing transaction',
+            allOf: [
+                {
+                    '$ref': '#/components/schemas/ResourceUsage'
+                }
+            ]
+        },
+        refundOfId: {
+            type: 'number',
+            description: 'The billing transaction ID of the billing transaction that is being refunded'
+        },
+        refundOf: {
+            description: 'The billing transaction that is being refunded',
+            allOf: [
+                {
+                    '$ref': '#/components/schemas/BillingTransaction'
+                }
+            ]
+        }
+    },
+    required: ['id', 'userId', 'user', 'createdAt', 'updatedAt', 'amount', 'initiatorId', 'initiator', 'resourceUsageId', 'resourceUsage', 'refundOfId', 'refundOf']
+} as const;
+
+export const $TransactionsDto = {
+    type: 'object',
+    properties: {
+        data: {
+            type: 'array',
+            items: {
+                '$ref': '#/components/schemas/BillingTransaction'
+            }
+        },
+        total: {
+            type: 'number'
+        },
+        page: {
+            type: 'number'
+        },
+        limit: {
+            type: 'number'
+        }
+    },
+    required: ['data', 'total', 'page', 'limit']
+} as const;
+
+export const $ModifyBalanceDto = {
+    type: 'object',
+    properties: {
+        amount: {
+            type: 'number',
+            description: 'The amount to modify the balance by',
+            example: 100
+        }
+    },
+    required: ['amount']
+} as const;
+
+export const $ResourceBillingConfiguration = {
+    type: 'object',
+    properties: {
+        id: {
+            type: 'number',
+            description: 'The unique identifier of the resource billing configuration',
+            example: 1
+        },
+        createdAt: {
+            format: 'date-time',
+            type: 'string',
+            description: 'The date and time the billing transaction was created'
+        },
+        updatedAt: {
+            format: 'date-time',
+            type: 'string',
+            description: 'The date and time the billing transaction was last updated'
+        },
+        resourceId: {
+            type: 'number',
+            description: 'The ID of the resource'
+        },
+        resource: {
+            type: 'object',
+            description: 'The resource'
+        },
+        creditsPerUsage: {
+            type: 'number',
+            description: 'The credit cost per usage'
+        },
+        creditsPerMinute: {
+            type: 'number',
+            description: 'The credit cost per minute'
+        },
+        isBillingEnabled: {
+            type: 'boolean',
+            description: 'Whether billing is enabled'
+        }
+    },
+    required: ['id', 'createdAt', 'updatedAt', 'resourceId', 'creditsPerUsage', 'creditsPerMinute', 'isBillingEnabled']
+} as const;
+
+export const $UpdateResourceBillingConfigurationDto = {
+    type: 'object',
+    properties: {
+        creditsPerUsage: {
+            type: 'number',
+            description: 'The credit cost per usage',
+            example: 100
+        },
+        creditsPerMinute: {
+            type: 'number',
+            description: 'The credit cost per minute',
+            example: 100
+        }
+    }
+} as const;
+
+export const $ResourceFlowNodeSchemaDto = {
+    type: 'object',
+    properties: {
+        type: {
+            type: 'string',
+            description: 'The name of the node type',
+            enum: ['input.button', 'input.resource.usage.started', 'input.resource.usage.stopped', 'input.resource.usage.takeover', 'input.resource.door.unlocked', 'input.resource.door.locked', 'input.resource.door.unlatched', 'output.http.sendRequest', 'output.mqtt.sendMessage', 'processing.wait', 'processing.if']
+        },
+        configSchema: {
+            type: 'object',
+            description: 'The schema for a node type',
+            additionalProperties: true
+        },
+        inputs: {
+            description: 'The inputs for a node type',
+            type: 'array',
+            items: {
+                type: 'string'
+            }
+        },
+        outputs: {
+            description: 'The outputs for a node type',
+            type: 'array',
+            items: {
+                type: 'string'
+            }
+        },
+        supportedByResource: {
+            type: 'boolean',
+            description: 'Whether the node type is supported by this resource'
+        },
+        isOutput: {
+            type: 'boolean',
+            description: 'Whether the node type is an output node'
+        }
+    },
+    required: ['type', 'configSchema', 'inputs', 'outputs', 'supportedByResource', 'isOutput']
 } as const;
 
 export const $ResourceFlowNodePositionDto = {

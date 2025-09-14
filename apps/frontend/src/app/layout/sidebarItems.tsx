@@ -1,8 +1,11 @@
 import {
+  BanknoteIcon,
   BookOpenIcon,
   BugIcon,
+  ChartNoAxesCombinedIcon,
   CogIcon,
   ComputerIcon,
+  CreditCardIcon,
   DatabaseIcon,
   FileChartColumnIncreasingIcon,
   GiftIcon,
@@ -76,6 +79,32 @@ export function useSidebarItems(): (SidebarItem | SidebarItemGroup)[] {
       });
     }
 
+    if (license?.modules.includes('billing')) {
+      items.push({
+        translationKey: 'billing',
+        isGroup: true,
+        icon: CreditCardIcon,
+        licenseModule: 'billing',
+        items: [
+          {
+            path: '/billing',
+            translationKey: 'dashboard',
+            icon: ChartNoAxesCombinedIcon,
+          },
+          {
+            path: '/billing/administration',
+            translationKey: 'administration',
+            icon: BanknoteIcon,
+          },
+          {
+            path: '/billing/csv-export',
+            translationKey: 'csvExport',
+            icon: FileChartColumnIncreasingIcon,
+          },
+        ],
+      });
+    }
+
     // Auth group
     const authGroup: SidebarItemGroup = {
       translationKey: 'auth',
@@ -113,11 +142,6 @@ export function useSidebarItems(): (SidebarItem | SidebarItemGroup)[] {
           icon: ServerIcon,
         },
         {
-          path: '/csv-export',
-          translationKey: 'csvExport',
-          icon: FileChartColumnIncreasingIcon,
-        },
-        {
           path: '/plugins',
           translationKey: 'plugins',
           icon: PackageIcon,
@@ -137,7 +161,7 @@ export function useSidebarItems(): (SidebarItem | SidebarItemGroup)[] {
 export const useSidebarEndItems = () => {
   const { user } = useAuth();
 
-  const { t } = useTranslations('sidebar.endItems', {
+  const { t } = useTranslations({
     en,
     de,
   });

@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.6.2 
 
 import { InfiniteData, UseInfiniteQueryOptions, useInfiniteQuery } from "@tanstack/react-query";
-import { ResourceFlowsService, ResourceMaintenancesService, ResourcesService, UsersService } from "../requests/services.gen";
+import { BillingService, ResourceFlowsService, ResourceMaintenancesService, ResourcesService, UsersService } from "../requests/services.gen";
 import * as Common from "./common";
 export const useUsersServiceFindManyInfinite = <TData = InfiniteData<Common.UsersServiceFindManyDefaultResponse>, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ ids, limit, search }: {
   ids?: number[];
@@ -49,6 +49,14 @@ export const useResourceMaintenancesServiceFindMaintenancesInfinite = <TData = I
   resourceId: number;
 }, queryKey?: TQueryKey, options?: Omit<UseInfiniteQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useInfiniteQuery({
   queryKey: Common.UseResourceMaintenancesServiceFindMaintenancesKeyFn({ includeActive, includePast, includeUpcoming, limit, resourceId }, queryKey), queryFn: ({ pageParam }) => ResourceMaintenancesService.findMaintenances({ includeActive, includePast, includeUpcoming, limit, page: pageParam as number, resourceId }) as TData, initialPageParam: "1", getNextPageParam: response => (response as {
+    nextPage: string;
+  }).nextPage, ...options
+});
+export const useBillingServiceGetBillingTransactionsInfinite = <TData = InfiniteData<Common.BillingServiceGetBillingTransactionsDefaultResponse>, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ limit, userId }: {
+  limit?: number;
+  userId: number;
+}, queryKey?: TQueryKey, options?: Omit<UseInfiniteQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useInfiniteQuery({
+  queryKey: Common.UseBillingServiceGetBillingTransactionsKeyFn({ limit, userId }, queryKey), queryFn: ({ pageParam }) => BillingService.getBillingTransactions({ limit, page: pageParam as number, userId }) as TData, initialPageParam: "1", getNextPageParam: response => (response as {
     nextPage: string;
   }).nextPage, ...options
 });
