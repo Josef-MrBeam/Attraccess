@@ -20,7 +20,7 @@ export class SSOOIDCStrategy extends PassportStrategy(Strategy, 'sso-oidc') {
       clientID: config.clientId,
       clientSecret: config.clientSecret,
       callbackURL,
-      scope: ['openid', 'email', 'profile'],
+      scope: ['openid', 'profile'],
     });
 
     this.logger.log(`Initialized OIDC strategy with issuer: ${config.issuer} and callbackURL: ${callbackURL}`);
